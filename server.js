@@ -10,7 +10,10 @@ const auth = require('./routes/api/auth');
 const profile = require('./routes/api/profile');
 const posts = require('./routes/api/posts');
 
+const bodyParser = require('body-parser');
 
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 mongoose
     .connect(db)
