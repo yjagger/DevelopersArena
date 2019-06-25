@@ -1,13 +1,15 @@
-//Not related to the application.
-//Only for understanding purpose
+//Notes
+
 app.get("/abcd", function(req, res, next){
     console.log("abcd route called");
     next();
 })
+
 app.get("/abcd", function(req, res, next){
     console.log("abcd part 2, throwing error");
     throw new Error('abcd failed');
 })
+
 app.use("/abcd", function(err,req, res, next){
     console.log("abcd request error caught, passing error on next");
     next(err);
@@ -25,13 +27,22 @@ app.get("/abcde", function(req, res) {
            
         }
         //res.send('error found');
-    
 })
+
+//custom error handling middleware.
+
+//error handling means - catching the error and then doing anything with or without it.
+
+//this will catch all the errors thrown and not caught by try catch or by any other middleware earlier in the pipeline and all catch the errors invoked via next(error).
+
+//so we can either use try catch or call next(error) to invoke error middleware for error handling.
+
 app.use("/abcde", function(err, req, res, next ){
     console.log("not passing abcde error via next.\nIt should still be considered unhandled")
     res.send("all ok");
     next();
 })
+
 app.use("/",function(req, res){
     console.log("route not handled")
     res.send('404 - not found')
