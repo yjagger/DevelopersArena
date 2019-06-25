@@ -1,4 +1,5 @@
-//for understanding purpose
+//Not related to the application.
+//Only for understanding purpose
 app.get("/abcd", function(req, res, next){
     console.log("abcd route called");
     next();
