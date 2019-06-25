@@ -1,0 +1,37 @@
+//for understanding purpose
+app.get("/abcd", function(req, res, next){
+    console.log("abcd route called");
+    next();
+})
+app.get("/abcd", function(req, res, next){
+    console.log("abcd part 2, throwing error");
+    throw new Error('abcd failed');
+})
+app.use("/abcd", function(err,req, res, next){
+    console.log("abcd request error caught, passing error on next");
+    next(err);
+})
+
+app.get("/abcde", function(req, res) {
+    console.log("abcde request called. throwing error");
+        try {
+            throw new Error('abcde failed');
+
+        } catch (error) {
+            console.log("what happens to me?");
+            
+            res.status(500).send("Path resolver error. \nMake sure path is correct and try again later")
+           
+        }
+        //res.send('error found');
+    
+})
+app.use("/abcde", function(err, req, res, next ){
+    console.log("not passing abcde error via next.\nIt should still be considered unhandled")
+    res.send("all ok");
+    next();
+})
+app.use("/",function(req, res){
+    console.log("route not handled")
+    res.send('404 - not found')
+})
