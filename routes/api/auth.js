@@ -39,9 +39,8 @@ router.post('/register', (req, res)=> {
 
     User.findOne({email: req.body.email}).then(user => {
         if(user)
-        return res.status(400).json({email:'Email already exists'});
+        return res.status(400).json({emailError:'Email already exists'});
         else{
-
             const avatar = gravatar.url(req.body.url, {
                 s: '200', //Size
                 r: 'pg',  //Rating
@@ -84,50 +83,56 @@ router.post('/login',  (req, res)=>{
         let x ={} ;
         errors.forEach(y => {
             for(var att in y)
-                x[att] = y[att];
+                x[att] = y[att]; //possible because of dynamically generation of keys using [] 
+
+            //Or Object.assign(x, y) -> returns x object with y properties copied (overwritten if they have same key )on x. 
+            //Object.assign(target, source); 
+
+            //Or return {...x, y} spreads the x properties and add y properties.
         });
         
-        res.status(400).json(x);
+        return res.status(400).json(x);
     }
     const email = req.body.email ;
     const password = req.body.password ;
 
-    User.findOne({email: email})
-        .then(user => {
-            //check for user
-            if(!user){
-                return res.status(404).json({
-                    email: "User not registered with us"
-                })
-            }
-           
-            bcrypt.compare(password, user.password)
-            .then(isMatch => {
-                if(isMatch){
-                    //User Matched
-                    const payload = {
-                        id: user.id,
-                        name : user.name,
-                        avatar: user.avatar
-                    }
-                    //sign the token
-                        jwt.sign(payload,keys.secretOrPrivateKey, {expiresIn: 3600 }, (err, token) => {
-                            res.json({
-                                success: true,
-                                token: 'Bearer '+token
-                            })
-                        } )       
+        User.findOne({email: email})
+            .then(user => {
+                //check for user
+                if(!user){
+                    return res.status(404).json({
+                        emailError: "User not registered with us"
+                    })
                 }
-                //check password
-                else
-                return res.status(400).json({
-                    password : "password not correct" 
-                });
-            })
             
-    }).catch(err => {
-        res.json({error: err});
-    })
+                bcrypt.compare(password, user.password)
+                .then(isMatch => {
+                    if(isMatch){
+                        //User Matched
+                        const payload = {
+                            id: user.id,
+                            name : user.name,
+                            avatar: user.avatar
+                        }
+                        //sign the token
+                            jwt.sign(payload,keys.secretOrPrivateKey, {expiresIn: 3600 }, (err, token) => {
+                                return res.json({
+                                    success: true,
+                                    token: 'Bearer '+token
+                                })
+                            } )       
+                    }
+                    //check password
+                    else
+                    return res.status(400).json({
+                        passwordError : "password not correct" 
+                    });
+                })
+                
+                        })
+            .catch(err => {
+            res.json({error: err});
+        })
 
 })
 

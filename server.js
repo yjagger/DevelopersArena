@@ -9,6 +9,7 @@ const db = require('./config/keys').mongoURI ;
 const auth = require('./routes/api/auth');
 const profile = require('./routes/api/profile');
 const posts = require('./routes/api/posts');
+const error = require('/routes/api.error');
 
 const app = express();
 
@@ -18,8 +19,12 @@ app.use(bodyParser.json());
 mongoose
     .connect(db)
         .then(() => console.log('MongoDB connected'))
-        .catch((err) => console.log("error while connecting to mongoDb\t"+err));
+        .catch((err) =>
+        {   
+            res.status(400).json({error:"error while connecting to mongoDb" })
 
+            console.log("error while connecting to mongoDb\t"+err)
+        });
 
 app.get('/', (req, res) => res.send('hello World'));
 
@@ -35,6 +40,7 @@ app.use(passport.initialize()) ;
 app.use('/api/users',auth);
 app.use('/api/profile', profile);
 app.use('/api/posts', posts);
+app.use('/error', error);
 
 
 //custom error handling middleware
@@ -52,8 +58,12 @@ app.use("/",function(req, res){
     res.status(404).send("404 - Page not found.");
 })
 
+//export to be able to redirect to error page from any route. 
+//Yet to create error page in React 
+//see use in posts.1.js file
+export {app};
 
 //run the SERVER on 4000.
 const port = process.env.PORT || 4000 ;
 
-app.listen(port, () => console.log('app listening at port 4000'));
+app.listen(port, () => console.log('app listening at port ' + port));

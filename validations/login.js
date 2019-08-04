@@ -7,10 +7,25 @@ module.exports = function validateLoginInput(data){
     data.email = !isEmpty(data.email) ? data.email : "" ;
     data.password = !isEmpty(data.password) ? data.password : "" ;
 
+    function findObjectExists(key){
+        var bool = false;
+        errors.forEach(element => {
+            if(element != undefined){
+                for(var property in element){
+                    if(property == key){                        
+                        bool = true;
+                    }
+                }
+            }
+        });
+                
+        return bool;
+    }
+
     if(!Validator.isEmail(data.email)){
         errors.push({emailError  :"Email invalid"});
     }
-    if(Validator.isEmpty(data.email)){
+    if(Validator.isEmpty(data.email) && !findObjectExists('emailError')){
         errors.push({emailError2 :"Email must not be empty"});
     }
 

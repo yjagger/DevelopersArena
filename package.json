@@ -6,7 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server",
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "client-app": "cd client && npm install",
+    "client" : "cd client && npm start",
+    "dev" : "concurrently  \"npm run server\"  \" npm run client\""
+
   },
   "author": "Yuvraj Jagga",
   "license": "MIT",
